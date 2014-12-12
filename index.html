@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Ujarzmienie natury</title>
+  <meta charset="utf-8">
+  <meta name="description" content="Ujarzmienie natury">
+  <meta name="author" content="Piotr Sobczyk">
+  <meta name="generator" content="slidify" />
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta http-equiv="X-UA-Compatible" content="chrome=1">
+  <link rel="stylesheet" href="libraries/frameworks/io2012/css/default.css" media="all" >
+  <link rel="stylesheet" href="libraries/frameworks/io2012/css/phone.css" 
+    media="only screen and (max-device-width: 480px)" >
+  <link rel="stylesheet" href="libraries/frameworks/io2012/css/slidify.css" >
+  <link rel="stylesheet" href="libraries/highlighters/highlight.js/css/zenburn.css" />
+  <base target="_blank"> <!-- This amazingness opens all links in a new tab. -->  <link rel=stylesheet href="libraries/widgets/bootstrap/css/bootstrap.css"></link>
+<link rel=stylesheet href="./assets/css/ribbons.css"></link>
+
+  
+  <!-- Grab CDN jQuery, fall back to local if offline -->
+  <script src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.7.min.js"></script>
+  <script>window.jQuery || document.write('<script src="libraries/widgets/quiz/js/jquery.js"><\/script>')</script> 
+  <script data-main="libraries/frameworks/io2012/js/slides" 
+    src="libraries/frameworks/io2012/js/require-1.0.8.min.js">
+  </script>
+  
+  
+
+</head>
+<body style="opacity: 0">
+  <slides class="layout-widescreen">
+    
+    <!-- LOGO SLIDE -->
+      <slide class="nobackground">
+    <article class="flexbox vcenter">
+      <span>
+        <img width='300px' src="assets/img/znak_pwr.png">
+      </span>
+    </article>
+  </slide>
+    <slide class="title-slide segue nobackground">
+  <aside class="gdbar">
+    <img src="assets/img/pwr.jpg">
+  </aside>
+  <hgroup class="auto-fadein">
+    <h1>Ujarzmienie natury</h1>
+    <h2>czyli o tworzeniu pakietów w języku R</h2>
+    <p>Piotr Sobczyk<br/>PWr</p>
+  </hgroup>
+  <article></article>  
+</slide>
+    
+
+    <!-- SLIDES -->
+    <slide class="big-background-slide" id="slide-1" style="background:;">
+  <hgroup>
+    <h2>Kilka uwag</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li>Prezentacja na podstawie gigantycznej liczby materiałów internetowych</li>
+<li>Zbiór uwag i porad - nie przepis na pakiet</li>
+<li>Niektóre fragmenty są wręcz tłumaczeniem - referencje na końcu</li>
+<li>Dużo wiedzy pochodzi od Julie Josse i Michała Burdukiewicza</li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="big-background-slide" id="slide-2" style="background:;">
+  <hgroup>
+    <h2>Plan prezentacji</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul class = "build incremental">
+<li>Po co tworzyć pakiety, jak to zrobić?</li>
+<li>Tworzenie dobrego pakietu - podstawowe cechy</li>
+<li>Tricks&amp;Tips</li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="big-background-slide" id="slide-3" style="background:;">
+  <hgroup>
+    <h2>O czym (nie) jest ta prezentacja?</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li>Nie opisuję procesu tworzenia pakietu</li>
+<li>Pełny opis tego procesu można znaleźć w <a href="http://dirk.eddelbuettel.com/papers/r_package_development_nov2014.pdf">tutorialu Dirka Eddelbuettela</a></li>
+<li>Powiem o tym dlaczego warto pisać pakiety i jak sprawić, żeby ten pakiet był napisany dobrze</li>
+<li>Jak zachęcić użytkownika do skorzystania z naszego pakietu?</li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="big-background-slide" id="slide-4" style="background:;">
+  <hgroup>
+    <h2>Dlaczego tworzyć pakiety</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul class = "build incremental">
+<li>Pakiet sprawia, że Twoja praca jest wpływowa - ma szansę być rzeczywiście używana</li>
+<li>Pakiety, stworzony software to wizytówka podobnie jak prace naukowe czy prezentacje</li>
+<li>Trzymanie funkcji w pakietach na własny użytek znacznie ułatwia pracę nad kodem</li>
+<li>Pakiety wersjonujemy. Przeglądając nasze stare kody i wyniki możemy zorientować się
+jak dokładnie wyglądały funkcje, z których korzystaliśmy</li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="background-slide" id="slide-5" style="background:;">
+  <article data-timings="">
+    <ul class = "build incremental">
+<li>Pytanie: Tworzę kod na własny użytek jaką korzyść mam z wrzucenia moich kilku funkcji do pakietu?</li>
+<li>Odpowiedź: Jeśli kod będzie wykorzystywany w przyszłości to dobrze, żeby tworzył pewną całość.</li>
+<li>[P]: Czy można po prostu utrzymywać porządek w folderach? </li>
+<li>[U]: Tak, ale co gdy daną funkcję chcemy wykorzystać kilka razy?</li>
+<li>[P]: Będę ładować funkcję z innego folderu albo ją skopiuję. </li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="big-background-slide" id="slide-6" style="background:;">
+  <article data-timings="">
+    <ul class = "build incremental">
+<li>[U]: Wtedy kod w folderach nie będzie stanowił całości i jedności, albo będziemy mieć kod funkcji w kilku miejscach. 
+Co jeśli dokonamy zmiany i zapomnimy zmienić jednego z tych plików? Zrobi nam się bałagan i potencjalnie kod nie będzie
+działał tak, jak tego oczekujemy.</li>
+<li>[P]: Czyli zamiast tworzenia pakietów można utrzymywać porządek w kodzie?</li>
+<li><p>[U]: Pakiety tworzy się właśnie w tym celu! Chodzi o to, żeby samemu nie zgubić się w swoim kodzie
+oraz żeby inni mogli z naszego kodu skorzystać.</p></li>
+<li><p>Generalna zasada jest taka, że aby nadać naszemy kodowi strukturę musimy poświęcić sporo trochę czasu. 
+Ten czas oszczędzamy później gdy korzystamy z wcześniej stworzonych funkcji, kiedy łatwiej znaleźć nam błędy, lub
+gdy musimy komuś wytłumaczyć jak nasz kod działa.
+I wreszcie duże znaczenie ma to, że wiemy, że nasz kod robi <strong>dokładnie</strong> to czego oczekujemy.</p></li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="big-background-slide" id="slide-7" style="background:;">
+  <hgroup>
+    <h2>Jak się za to zabrać?</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul class = "build incremental">
+<li>Pakiet najwygodniej tworzyć w RStudio, instalujemy też pakiet devtools</li>
+<li>Nazwa pakietu powinna być prosta, bez dziwnych znaków, unikalna, googlowalna</li>
+<li>Od razu wybieramy opcję na wersjonowanie pakietu</li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="big-background-slide" id="slide-8" style="background:;">
+  <hgroup>
+    <h2>DESCRIPTION</h2>
+  </hgroup>
+  <article data-timings="">
+    <pre><code class="r">Package: mojpakiet
+Type: Package
+Title: Jedno zdanie - co robi pakiet
+Version: 0.0.1
+Date: 2014-11-28
+Author: Ja
+Maintainer: Ja &lt;adres@mailowy.pl&gt;
+Description: Krótki opis pakietu
+License: GPL-3
+Depends:
+    R (&gt;= 3.0.2)
+Imports:
+    RcppEigen
+Suggests:
+    knitr,
+    rmarkdown,
+    testthat
+Repository: CRAN
+</code></pre>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="big-background-slide" id="slide-9" style="background:;">
+  <hgroup>
+    <h2>Co dalej?</h2>
+  </hgroup>
+  <article data-timings="">
+    <pre><code class="r">devtools::build()
+devtools::document()
+devtools::check()
+devtools::test()
+devtools::install_github()
+R CMD install nazwapakietu_0.0.1.tar.gz
+</code></pre>
+
+<ul class = "build incremental">
+<li>Nie powinniśmy dostawać żadnych Errors, Warnings, Notes</li>
+<li>To jest warunek do przyjęcia do CRANu (repozytorium pakietów)</li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="big-background-slide" id="slide-10" style="background:;">
+  <hgroup>
+    <h2>Dokumentacja za pomocą pakietu roxygen2</h2>
+  </hgroup>
+  <article data-timings="">
+    <pre><code class="r">#&#39; Short description
+#&#39;
+#&#39; Detailed descprition.
+#&#39;
+#&#39; @param param1, list of vectors, some vectors in a list
+#&#39; @param param2 an integer, some number
+#&#39; @param param3 a boolean, if TRUE (value set by default) then sth
+#&#39; @export
+#&#39; @return An object of class klasa consisting of
+#&#39; \item{item1}{a vector containing sth}
+#&#39; \item{item2}{numeric, value of sth}
+#&#39; @examples
+#&#39; \donttest{
+#&#39; example1
+#&#39; }
+</code></pre>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="big-background-slide" id="slide-11" style="background:;">
+  <hgroup>
+    <h2>Co jeszcze warto wiedzieć o dokumentacji</h2>
+  </hgroup>
+  <article data-timings="">
+    <pre><code class="r">  donttest{ } #kod nie będzie sprawdzany przy tworzeniu pakietu
+  dontrrun{ } #kod nie będzie się wykonywałem po uruchomieniu
+  example(nazwa_funkcji)
+</code></pre>
+
+<ul class = "build incremental">
+<li>@export - funkcja będzie dostępna po załadowaniu</li>
+<li>@internal - dokumentacja nie pokazuje się w index (w pomocy)</li>
+<li>Nie opisuj czym jest parametr, ale jak go wykorzystać</li>
+<li>Rób taką dokumentacją, z jakiej sam chciałbyś skorzystać (zasada Kanta)</li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="big-background-slide" id="slide-12" style="background:;">
+  <hgroup>
+    <h2>Styl - <a href="http://stat405.had.co.nz/r-style.html">źródło</a></h2>
+  </hgroup>
+  <article data-timings="">
+    <ul class = "build incremental">
+<li>Nazwy funkcji i zmiennych powinny być zgodne z wybraną, jedną, konwencją.
+Np. camelCase, lowercase, z separatorem: moja_funkcja</li>
+<li>nazwy zmiennych - rzeczowniki, nazwy funkcji - czasowniki</li>
+<li>Kod powinien być przejrzysty, linie mają mieć mniej niż 80 znaków</li>
+<li>Należy pamiętać o wcięciach (m.in. przy if, for, definicjach funkcji)</li>
+<li>Używaj &lt;- zamiast = jako przypisania.</li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="big-background-slide" id="slide-13" style="background:;">
+  <hgroup>
+    <h2>Kontrola wersji</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul class = "build incremental">
+<li>Kod przestaje działać po dużej zmianie</li>
+<li>Dawno temu zrobiłeś/aś symulacje, ale program
+się od tego czasu nieco zmienił</li>
+<li>Piszesz kod wspólnie z kimś</li>
+<li>Rozwiązanie to system kontroli wersji</li>
+<li>Konwencja wersjonowania</li>
+<li>Dlaczego <a href="http://kbroman.org/github_tutorial/">używać git(hub)</a>?</li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="big-background-slide" id="slide-14" style="background:;">
+  <hgroup>
+    <h2>Testy - czyli jak uniknąć najgorszego?</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul class = "build incremental">
+<li>Najgorszą rzeczą jest późne odkrycie buga</li>
+<li>Pisanie testów pozwoli Ci szybko znaleźć błędy</li>
+<li>Każda funkcja powinna wykonywać jedną, niedużą pracę</li>
+<li>Testy można/powinno się pisać <strong>przed</strong> rozpoczęciem pisania funkcji</li>
+<li>They make you slow down and think about what you are doing (Jeff Leek)</li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="big-background-slide" id="slide-15" style="background:;">
+  <hgroup>
+    <h2>Testy - aspekty techniczne</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul class = "build incremental">
+<li>Polecany pakiet to testthat</li>
+<li>testy znajdują się w folderze tests/testthat</li>
+</ul>
+
+<pre><code class="r">test_that(&quot;tests for kwantyle&quot;,{
+  set.seed(12345)
+  dane &lt;- rnorm(100)
+  expect_less_than(kwantyle(dane)[1], 0)
+  expect_warning(kwantyle(NULL))
+  expect_equal(kwantyle(c(1,2,3,4,5))[1], 1.9999, tolerance = 1e-3, scale = 1)
+})
+</code></pre>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="big-background-slide" id="slide-16" style="background:;">
+  <hgroup>
+    <h2>Vignette czyli prosty tutorial</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul class = "build incremental">
+<li>Nie możemy nikogo zmusić do używania naszego pakietu</li>
+<li>Dokumentacja to tylko doraźna pomoc</li>
+<li>Musimy sprawić, żeby użytkownik wiedział od czego zacząć</li>
+</ul>
+
+<iframe id="player" style="position: relative; height: 250px; width: 450px" src="http://www.youtube.com/embed/Qx8RlqCG2mg?rel=0&amp;enablejsapi=1"></iframe>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="big-background-slide" id="slide-17" style="background:;">
+  <hgroup>
+    <h2>Vignette czyli tworzenie tutorialu</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul class = "build incremental">
+<li>Krótki opis tego co robi pakiet i na jakich danych operuje</li>
+<li>Przykładowa analiza </li>
+<li>Opis podstawowych funkcji wraz przykładem użycia</li>
+<li>Plik vignette.Rmd w folderze vignettes/</li>
+<li>Używamy <a href="http://rmarkdown.rstudio.com/">rmarkdown</a></li>
+<li>W stosowanej statystyce vignette może ewoluować do pracy naukowej</li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="big-background-slide" id="slide-18" style="background:;">
+  <hgroup>
+    <h2>Shiny czyli jak się pokazać</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul class = "build incremental">
+<li>Na CRAN-ie jest 6000 pakietów - musimy się wyróżnić z tłumu</li>
+<li>Potencjalnemu użytkownikowi niekoniecznie chce się czytać nasz tutorial</li>
+<li>Rozwiązaniem jest napisanie aplikacji webowej</li>
+<li>Pewien schemat, z możliwościami rozbudowy, daje pakiet shiny</li>
+<li><a href="http://shiny.rstudio.com/">Świetna dokumentacja</a></li>
+<li>Przyzwoita aplikacja do napisania w parę godzin</li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="big-background-slide" id="slide-19" style="background:;">
+  <hgroup>
+    <h2>Podsumowanie</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul class = "build incremental">
+<li>Tworzenie pakietów pozwala na wywieraniu wpływu</li>
+<li>Pakiet tworzony na własny użytek pozwala lepiej panować nad kodem</li>
+<li>Warto dbać o dokumentację i jakość estetyczną kodu</li>
+<li>System kontroli wersji strukturyzuje pracę (zwłaszcza w grupie)</li>
+<li>Pisanie testów może spowalniać pracę, ale zwiększa jej jakość</li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="big-background-slide" id="slide-20" style="background:;">
+  <hgroup>
+    <h2>Materiały internetowe</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul class = "build incremental">
+<li>Strona <a href="http://adv-r.had.co.nz/">Hadleya Wickhama</a></li>
+<li>Blog <a href="www.simplystatistics.org">simplystatistics</a> </li>
+<li>Blog <a href="http://smarterpoland.pl/">Przemysława Biecka</a></li>
+<li>Tutorial <a href="http://dirk.eddelbuettel.com/papers/r_package_development_nov2014.pdf">Dirka Eddelbuettela</a></li>
+<li>Tutorial <a href="https://github.com/jtleek/rpackages/">Jeffa Leeka</a></li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="thank-you-slide segue nobackground" id="slide-21">
+  <aside class="gdbar right"><img src="assets/img/pwr.jpg"></aside>
+  <article class="flexbox vleft auto-fadein">
+    <h2>Pytania?</h2>
+    <p>Slajdy są dostępne na mojej stronie internetowej</p>
+
+  </article>
+
+  <p class="auto-fadein" data-config-contact="">
+    <span>Blog</span><a href="http://szychtawdanych.wordpress.com/">http://szychtawdanych.wordpress.com/</a><br>
+    <span>Github</span><a href="https://github.com/psobczyk">https://github.com/psobczyk</a><br>
+    <span>IM</span><a href="http://im.pwr.edu.pl/~sobczyk">http://im.pwr.edu.pl/~sobczyk</a><br>
+  </p>
+</slide>
+    <slide class="backdrop"></slide>
+  </slides>
+  <div class="pagination pagination-small" id='io2012-ptoc' style="display:none;">
+    <ul>
+      <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=1 title='Kilka uwag'>
+         1
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=2 title='Plan prezentacji'>
+         2
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=3 title='O czym (nie) jest ta prezentacja?'>
+         3
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=4 title='Dlaczego tworzyć pakiety'>
+         4
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=5 title=''>
+         5
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=6 title=''>
+         6
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=7 title='Jak się za to zabrać?'>
+         7
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=8 title='DESCRIPTION'>
+         8
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=9 title='Co dalej?'>
+         9
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=10 title='Dokumentacja za pomocą pakietu roxygen2'>
+         10
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=11 title='Co jeszcze warto wiedzieć o dokumentacji'>
+         11
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=12 title='Styl - <a href="http://stat405.had.co.nz/r-style.html">źródło</a>'>
+         12
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=13 title='Kontrola wersji'>
+         13
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=14 title='Testy - czyli jak uniknąć najgorszego?'>
+         14
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=15 title='Testy - aspekty techniczne'>
+         15
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=16 title='Vignette czyli prosty tutorial'>
+         16
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=17 title='Vignette czyli tworzenie tutorialu'>
+         17
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=18 title='Shiny czyli jak się pokazać'>
+         18
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=19 title='Podsumowanie'>
+         19
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=20 title='Materiały internetowe'>
+         20
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=21 title='Pytania?'>
+         21
+      </a>
+    </li>
+  </ul>
+  </div>  <!--[if IE]>
+    <script 
+      src="http://ajax.googleapis.com/ajax/libs/chrome-frame/1/CFInstall.min.js">  
+    </script>
+    <script>CFInstall.check({mode: 'overlay'});</script>
+  <![endif]-->
+</body>
+  <!-- Load Javascripts for Widgets -->
+  <script src="libraries/widgets/bootstrap/js/bootstrap.min.js"></script>
+<script src="libraries/widgets/bootstrap/js/bootbox.min.js"></script>
+
+  <!-- MathJax: Fall back to local if CDN offline but local image fonts are not supported (saves >100MB) -->
+  <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        inlineMath: [['$','$'], ['\\(','\\)']],
+        processEscapes: true
+      }
+    });
+  </script>
+  <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/2.0-latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  <!-- <script src="https://c328740.ssl.cf1.rackcdn.com/mathjax/2.0-latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+  </script> -->
+  <script>window.MathJax || document.write('<script type="text/x-mathjax-config">MathJax.Hub.Config({"HTML-CSS":{imageFont:null}});<\/script><script src="libraries/widgets/mathjax/MathJax.js?config=TeX-AMS-MML_HTMLorMML"><\/script>')
+</script>
+<script>  
+  $(function (){ 
+    $("#example").popover(); 
+    $("[rel='tooltip']").tooltip(); 
+  });  
+  </script>  
+  <!-- LOAD HIGHLIGHTER JS FILES -->
+  <script src="libraries/highlighters/highlight.js/highlight.pack.js"></script>
+  <script>hljs.initHighlightingOnLoad();</script>
+  <!-- DONE LOADING HIGHLIGHTER JS FILES -->
+   
+  </html>
